@@ -3,8 +3,8 @@ Contributors: hystericallyme
 Donate link: http://bolderelements.net/
 Tags: woocommerce, shipping, cities
 Requires at least: 4.8
-Tested up to: 4.9
-Stable tag: 1.1
+Tested up to: 5.4
+Stable tag: 1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,7 +42,7 @@ https://codecanyon.net/item/table-rate-shipping-for-woocommerce/3796656?ref=bold
 
 == Changelog ==
 
-= 1.1.1 =
+= 1.2 =
 * Added automatic dashboard updates
 
 = 1.1 =
