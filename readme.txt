@@ -20,7 +20,7 @@ The shipping zones introduced in WooCommerce 2.6 were a great addition for many 
 
 * WooCommerce 2.6 or greater
 * WordPress 4.8 or greater
-* PHP version 5.6 or greater
+* PHP version 5.5 or greater
 * MySQL version 5.0 or greater
 
 <h4>Installation through FTP</h4>
@@ -41,9 +41,6 @@ You can purchase the parent plugin from the Bolder Elements CodeCanyon portfolio
 https://codecanyon.net/item/table-rate-shipping-for-woocommerce/3796656?ref=bolderelements
 
 == Changelog ==
-
-= 1.1.1 =
-* Added automatic dashboard updates
 
 = 1.1 =
 * Added ability to exclude listed cities
