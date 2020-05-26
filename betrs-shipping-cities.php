@@ -7,7 +7,7 @@ Author: Bolder Elements
 Author URI: http://www.bolderelements.net/
 Version: 1.2
 
-	Copyright: © 2017-2018 Bolder Elements (email : info@bolderelements.net)
+	Copyright: © 2017-2020 Bolder Elements (email : info@bolderelements.net)
 	License: GPLv2 or later
 	License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
@@ -15,6 +15,12 @@ Version: 1.2
 add_action('plugins_loaded', 'woocommerce_shipping_cities_init', 123);
 
 function woocommerce_shipping_cities_init() {
+
+	// setup the dashboard upgrader
+	require_once( 'class.upgrader.php' );
+	if ( is_admin() ) {
+	    new BETRS_Shipping_Cities_Upgrader( __FILE__, 'bolderelements', "betrs-shipping-cities" );
+	}
 
 	//Check if WooCommerce is active
 	if ( ! class_exists( 'WooCommerce' ) ) return;
@@ -29,11 +35,6 @@ function woocommerce_shipping_cities_init() {
 	if ( class_exists( 'BE_Shipping_Cities_WC' ) ) return;
 
 	class BE_Shipping_Cities_WC {
-
-		/**
-		 * Stopped Instance ID.
-		 */
-		public $shipping_stop_id = 0;
 
 		/**
 		 * Constructor.
@@ -75,23 +76,23 @@ function woocommerce_shipping_cities_init() {
 			$shipping_city = $package['destination']['city'];
 			$accepted_cities = explode( "\n", $method->get_instance_option( 'cities' ) );
 			$accepted_cities = array_map( 'trim', $accepted_cities );
-			$accepted_cities = array_map( 'mb_strtoupper', $accepted_cities );
+			$accepted_cities = array_map( 'strtoupper', $accepted_cities );
 			$cities_inc_ex = $method->get_instance_option( 'cities_inc_ex' );
 
 			if( $cities_inc_ex == 'excluding' ) {
-				if( in_array( mb_strtoupper( $shipping_city ), $accepted_cities ) )
+				if( in_array( strtoupper( $shipping_city ), $accepted_cities ) )
 					$results[] = false;
 				else
 					$results[] = true;
-			} elseif( in_array( mb_strtoupper( $shipping_city ), $accepted_cities ) ) {
+			} elseif( in_array( strtoupper( $shipping_city ), $accepted_cities ) ) {
 				$results[] = true;
 			} else {
 				$results[] = false;
 			}
 
 			// enable 'stop' feature if enabled
-			if( ! in_array( false, $results) && $method->get_instance_option( 'disable_others' ) === 'yes' ) {
-				$this->shipping_stop_id = $method->get_instance_id();
+			if( in_array( true, $results ) && $method->get_instance_option( 'disable_others' ) === 'yes' ) {
+				define( 'BETRS_CITY_SHIPPING_STOP', $method->get_instance_id() );
 			}
 
 			return $results;
@@ -128,8 +129,7 @@ function woocommerce_shipping_cities_init() {
 						'title' 		=> __( 'Allowed Cities', 'woocommerce' ),
 						'type' 			=> 'textarea',
 						'description' 	=> __( 'List one city name per line', 'betrs-sc' ),
-						'css'			=> 'height: 150px;',
-						'default'		=> '',
+						'css'			=> 'height: 150px;'
 					),
 					'disable_others' => array(
 						'title' 		=> __( 'Disable Other Methods', 'woocommerce' ),
@@ -153,23 +153,10 @@ function woocommerce_shipping_cities_init() {
 		 */
 		function enable_stop_calculations( $results, $package, $method ) {
 
-			if( $this->shipping_stop_id > 0 && $this->shipping_stop_id !== intval( $method->get_instance_id() ) )
+			if( defined( 'BETRS_CITY_SHIPPING_STOP' ) && BETRS_CITY_SHIPPING_STOP !== intval( $method->get_instance_id() ) )
 				$results[] = false;
 
 			return $results;
-		}
-
-
-		/**
-		 * Reset Shipping Method STOP Instance ID when recalculating shipping
-		 *
-		 * @access public
-		 * @return bool
-		 */
-		function reset_shipping_stop_id( $class ) {
-			$this->shipping_stop_id = 0;
-			
-			return $class;
 		}
 
 	} // end class BE_Shipping_Cities_WC
@@ -203,51 +190,4 @@ function betrs_sc_admin_notice() {
     	<?php _e( 'Purchase Table Rate Shipping', 'betrs-sc' ); ?></a></p>
 </div>
 <?php
-}
-
-/**
- * API check.
- *
- * @since 1.0.0
- *
- * @param bool   $api Always false.
- * @param string $action The API action being performed.
- * @param object $args Plugin arguments.
- * @return mixed $api The plugin info or false.
- */
-function betrs_sc_override_plugins_api_result( $res, $action, $args ) {
-
-	if ( isset( $args->slug ) && 'betrs-shipping-cities' === $args->slug ) {
-		$api_check = betrs_sc_override_api_check();
-		if ( is_object( $api_check ) ) {
-			$res = $api_check;
-			$res->external = true;
-		}
-	}
-
-	return $res;
-}
-add_filter( 'plugins_api_result', 'betrs_sc_override_plugins_api_result', 5, 3 );
-
-
-/**
- * Check Github for an update.
- *
- * @since 1.0.0
- *
- * @return false|object
- */
-function betrs_sc_override_api_check() {
-	$raw_response = wp_remote_get( 'https://bolderelements.github.io/plugin-info/betrs-shipping-cities.json' );
-
-	if ( is_wp_error( $raw_response ) ) {
-		return false;
-	}
-	if ( ! empty( $raw_response['body'] ) ) {
-		$raw_body = json_decode( trim( $raw_response['body'] ), true );
-		if ( $raw_body ) {
-			return (object) $raw_body;
-		}
-	}
-	return false;
 }

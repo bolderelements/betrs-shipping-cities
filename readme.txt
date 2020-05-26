@@ -3,7 +3,7 @@ Contributors: hystericallyme
 Donate link: http://bolderelements.net/
 Tags: woocommerce, shipping, cities
 Requires at least: 4.8
-Tested up to: 5.4
+Tested up to: 4.9
 Stable tag: 1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -20,7 +20,7 @@ The shipping zones introduced in WooCommerce 2.6 were a great addition for many 
 
 * WooCommerce 2.6 or greater
 * WordPress 4.8 or greater
-* PHP version 5.6 or greater
+* PHP version 5.5 or greater
 * MySQL version 5.0 or greater
 
 <h4>Installation through FTP</h4>
