@@ -45,8 +45,6 @@ function woocommerce_shipping_cities_init() {
 			add_filter( 'woocommerce_shipping_instance_form_fields_betrs_shipping', array( $this, 'add_settings_section' ), 10, 1 );
 			add_filter( 'betrs_custom_restrictions', array( $this, 'compare_shipping_city' ), 10, 3 );
 			add_filter( 'betrs_custom_restrictions', array( $this, 'enable_stop_calculations' ), 5, 3 );
-
-			add_action( 'woocommerce_cart_reset', array( $this, 'reset_shipping_stop_id' ), 10, 1 );
 		}
 
 
