@@ -5,7 +5,7 @@ Plugin URI: http://www.bolderelements.net/shipping-city-woocommerce/
 Description: Narrow down your WooCommerce shipping zones based on city names when using the Bolder Elements Table Rate Shipping plugin
 Author: Bolder Elements
 Author URI: http://www.bolderelements.net/
-Version: 1.2
+Version: 1.2.1
 
 	Copyright: © 2017-2020 Bolder Elements (email : info@bolderelements.net)
 	License: GPLv2 or later
