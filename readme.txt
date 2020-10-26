@@ -42,6 +42,9 @@ https://codecanyon.net/item/table-rate-shipping-for-woocommerce/3796656?ref=bold
 
 == Changelog ==
 
+= 1.2.1 =
+* Remove unused hook causing PHP warning in PHP 7.2+
+
 = 1.2 =
 * Added automatic dashboard updates
 
