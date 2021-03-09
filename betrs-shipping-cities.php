@@ -5,9 +5,9 @@ Plugin URI: http://www.bolderelements.net/shipping-city-woocommerce/
 Description: Narrow down your WooCommerce shipping zones based on city names when using the Bolder Elements Table Rate Shipping plugin
 Author: Bolder Elements
 Author URI: http://www.bolderelements.net/
-Version: 1.2.1
+Version: 1.2.2
 
-	Copyright: © 2017-2020 Bolder Elements (email : info@bolderelements.net)
+	Copyright: © 2017-2021 Bolder Elements (email : info@bolderelements.net)
 	License: GPLv2 or later
 	License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
@@ -36,6 +36,8 @@ function woocommerce_shipping_cities_init() {
 
 	class BE_Shipping_Cities_WC {
 
+		protected $BETRS_CITY_SHIPPING_STOP = false;
+
 		/**
 		 * Constructor.
 		 */
@@ -45,6 +47,7 @@ function woocommerce_shipping_cities_init() {
 			add_filter( 'woocommerce_shipping_instance_form_fields_betrs_shipping', array( $this, 'add_settings_section' ), 10, 1 );
 			add_filter( 'betrs_custom_restrictions', array( $this, 'compare_shipping_city' ), 10, 3 );
 			add_filter( 'betrs_custom_restrictions', array( $this, 'enable_stop_calculations' ), 5, 3 );
+			add_action( 'woocommerce_before_calculate_totals', array( $this, 'reset_stop_var' ) );
 		}
 
 
@@ -57,6 +60,18 @@ function woocommerce_shipping_cities_init() {
 		function enable_city_shipping_calculator() {
 			
 			return true;
+		}
+
+
+		/**
+		 * Reset the stop var when shipping is recalculated
+		 *
+		 * @access public
+		 * @return bool
+		 */
+		function reset_stop_var() {
+			
+			$this->BETRS_CITY_SHIPPING_STOP = false;
 		}
 
 
@@ -76,21 +91,25 @@ function woocommerce_shipping_cities_init() {
 			$accepted_cities = array_map( 'trim', $accepted_cities );
 			$accepted_cities = array_map( 'strtoupper', $accepted_cities );
 			$cities_inc_ex = $method->get_instance_option( 'cities_inc_ex' );
+			$match_made = false;
 
 			if( $cities_inc_ex == 'excluding' ) {
-				if( in_array( strtoupper( $shipping_city ), $accepted_cities ) )
+				if( in_array( strtoupper( $shipping_city ), $accepted_cities ) ) {
 					$results[] = false;
-				else
+				} else {
 					$results[] = true;
+					$match_made = true;
+				}
 			} elseif( in_array( strtoupper( $shipping_city ), $accepted_cities ) ) {
 				$results[] = true;
+				$match_made = true;
 			} else {
 				$results[] = false;
 			}
 
 			// enable 'stop' feature if enabled
-			if( in_array( true, $results ) && $method->get_instance_option( 'disable_others' ) === 'yes' ) {
-				define( 'BETRS_CITY_SHIPPING_STOP', $method->get_instance_id() );
+			if( $match_made && $method->get_instance_option( 'disable_others' ) === 'yes' ) {
+				$this->BETRS_CITY_SHIPPING_STOP = $method->get_instance_id();
 			}
 
 			return $results;
@@ -151,7 +170,7 @@ function woocommerce_shipping_cities_init() {
 		 */
 		function enable_stop_calculations( $results, $package, $method ) {
 
-			if( defined( 'BETRS_CITY_SHIPPING_STOP' ) && BETRS_CITY_SHIPPING_STOP !== intval( $method->get_instance_id() ) )
+			if( $this->BETRS_CITY_SHIPPING_STOP && $this->BETRS_CITY_SHIPPING_STOP !== intval( $method->get_instance_id() ) )
 				$results[] = false;
 
 			return $results;
