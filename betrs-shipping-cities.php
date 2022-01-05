@@ -146,7 +146,8 @@ function woocommerce_shipping_cities_init() {
 						'title' 		=> __( 'Allowed Cities', 'woocommerce' ),
 						'type' 			=> 'textarea',
 						'description' 	=> __( 'List one city name per line', 'betrs-sc' ),
-						'css'			=> 'height: 150px;'
+						'css'			=> 'height: 150px;',
+						'default'		=> '',
 					),
 					'disable_others' => array(
 						'title' 		=> __( 'Disable Other Methods', 'woocommerce' ),
